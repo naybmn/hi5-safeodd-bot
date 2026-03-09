@@ -34,8 +34,8 @@ def send_tip():
 
     bot.send_message(CHAT_ID, message)
 
-schedule.every().day.at("16:00").do(send_tip)
+schedule.every().day.at("16:10").do(send_tip)
 while True:
     schedule.run_pending()
     time.sleep(30)
-    send_tip()
+ 
