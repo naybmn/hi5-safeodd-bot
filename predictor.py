@@ -2,6 +2,9 @@ def select_safe(matches):
 
     safe = []
 
+    if "response" not in matches:
+        return safe
+
     for match in matches["response"]:
 
         home = match["teams"]["home"]["name"]
@@ -11,4 +14,4 @@ def select_safe(matches):
 
         safe.append((home, away, tip))
 
-    return safe[:6]
+    return safe
