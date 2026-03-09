@@ -7,6 +7,8 @@ def select_safe(matches):
         home = match["teams"]["home"]["name"]
         away = match["teams"]["away"]["name"]
 
-        safe.append((home, away, "Home Win"))
+        tip = "Home Win"
+
+        safe.append((home, away, tip))
 
     return safe[:6]
