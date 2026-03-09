@@ -7,6 +7,7 @@ from predictor import select_safe
 def send_tip():
 
     matches = get_matches()
+    print(matches)
     picks = select_safe(matches)
 
     if len(picks) < 6:
