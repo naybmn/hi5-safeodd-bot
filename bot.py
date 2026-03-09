@@ -15,7 +15,7 @@ def send_tip():
     print(matches)
     picks = select_safe(matches)
 
-    if len(picks) < 6:
+    if len(picks) < 2:
         bot.send_message(CHAT_ID, "⚠️ Not enough matches today")
         return
 
