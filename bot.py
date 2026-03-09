@@ -1,6 +1,8 @@
 import telebot
 import schedule
 import time
+from api_fetch import get_matches
+from predictor import select_safe
 
 TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
 CHAT_ID = "@gaolguru"
@@ -9,38 +11,26 @@ bot = telebot.TeleBot(TOKEN)
 
 def send_tip():
 
-    message = """
-⚽ DAILY SAFE SLIPS
+    matches = get_matches()
+    picks = select_safe(matches)
 
-🔥 Slip 1
-1️⃣ Team A vs Team B
-Tip: Team A Win
+    slip1 = picks[0:2]
+    slip2 = picks[2:4]
+    slip3 = picks[4:6]
 
-2️⃣ Team C vs Team D
-Tip: Over 1.5
+    message = "⚽ DAILY SAFE SLIPS\n\n"
 
-💰 Total Odd ≈ 2.00
+    message += "🔥 Slip 1\n"
+    for h,a,t in slip1:
+        message += f"{h} vs {a} - {t}\n"
 
+    message += "\n🔥 Slip 2\n"
+    for h,a,t in slip2:
+        message += f"{h} vs {a} - {t}\n"
 
-🔥 Slip 2
-1️⃣ Team E vs Team F
-Tip: Under 3.5
-
-2️⃣ Team G vs Team H
-Tip: Double Chance
-
-💰 Total Odd ≈ 2.05
-
-
-🔥 Slip 3
-1️⃣ Team I vs Team J
-Tip: Over 1.5
-
-2️⃣ Team K vs Team L
-Tip: Team K Win
-
-💰 Total Odd ≈ 2.10
-"""
+    message += "\n🔥 Slip 3\n"
+    for h,a,t in slip3:
+        message += f"{h} vs {a} - {t}\n"
 
     bot.send_message(CHAT_ID, message)
 
@@ -48,3 +38,4 @@ schedule.every().day.at("16:00").do(send_tip)
 while True:
     schedule.run_pending()
     time.sleep(30)
+    send_tip()
