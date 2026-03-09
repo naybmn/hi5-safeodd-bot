@@ -37,3 +37,4 @@ def send_tip():
 while True:
     schedule.run_pending()
     time.sleep(30)
+    send_tip()
