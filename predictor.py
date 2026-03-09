@@ -4,19 +4,25 @@ def select_safe(data):
 
     for match in data["response"]:
 
-        home = match["teams"]["home"]["name"]
-        away = match["teams"]["away"]["name"]
+        try:
 
-        home_win = match["fixture"]["status"]["short"]
+            home = match["teams"]["home"]["name"]
+            away = match["teams"]["away"]["name"]
 
-        # simple favorite logic
-        if home and away:
+            status = match["fixture"]["status"]["short"]
 
-            tip = f"{home} Win"
+            # Only upcoming matches
+            if status != "NS":
+                continue
+
+            tip = home + " Win"
 
             picks.append((home, away, tip))
 
-        if len(picks) >= 6:
-            break
+            if len(picks) >= 2:
+                break
+
+        except:
+            continue
 
     return picks
