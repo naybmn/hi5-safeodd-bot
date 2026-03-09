@@ -30,7 +30,7 @@ def send_tip():
 
 
 schedule.every(1).hours.do(send_tip)
-
+send_tip()
 while True:
     schedule.run_pending()
     time.sleep(30)
