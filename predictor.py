@@ -1,17 +1,22 @@
-def select_safe(matches):
+def select_safe(data):
 
-    safe = []
+    picks = []
 
-    if "response" not in matches:
-        return safe
-
-    for match in matches["response"]:
+    for match in data["response"]:
 
         home = match["teams"]["home"]["name"]
         away = match["teams"]["away"]["name"]
 
-        tip = "Home Win"
+        home_win = match["fixture"]["status"]["short"]
 
-        safe.append((home, away, tip))
+        # simple favorite logic
+        if home and away:
 
-    return safe
+            tip = f"{home} Win"
+
+            picks.append((home, away, tip))
+
+        if len(picks) >= 6:
+            break
+
+    return picks
