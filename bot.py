@@ -44,7 +44,7 @@ Tip: Team K Win
 
     bot.send_message(CHAT_ID, message)
 
-schedule.every().minute.do(send_tip)
+schedule.every().day.at("16:00").do(send_tip)
 while True:
     schedule.run_pending()
     time.sleep(30)
