@@ -10,17 +10,36 @@ bot = telebot.TeleBot(TOKEN)
 def send_tip():
 
     message = """
-⚽ SAFE ODD ~2 DAILY SLIP
+⚽ DAILY SAFE SLIPS
 
+🔥 Slip 1
 1️⃣ Team A vs Team B
-League: Premier League
 Tip: Team A Win
 
 2️⃣ Team C vs Team D
-League: La Liga
-Tip: Over 1.5 Goals
+Tip: Over 1.5
+
+💰 Total Odd ≈ 2.00
+
+
+🔥 Slip 2
+1️⃣ Team E vs Team F
+Tip: Under 3.5
+
+2️⃣ Team G vs Team H
+Tip: Double Chance
 
 💰 Total Odd ≈ 2.05
+
+
+🔥 Slip 3
+1️⃣ Team I vs Team J
+Tip: Over 1.5
+
+2️⃣ Team K vs Team L
+Tip: Team K Win
+
+💰 Total Odd ≈ 2.10
 """
 
     bot.send_message(CHAT_ID, message)
