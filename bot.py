@@ -4,6 +4,11 @@ import time
 
 from api_fetch import get_matches
 from predictor import select_safe
+
+TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
+CHAT_ID = "@gaolguru"
+
+bot = telebot.TeleBot(TOKEN)
 def send_tip():
 
     matches = get_matches()
