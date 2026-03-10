@@ -75,7 +75,7 @@ schedule.every(10).minutes.do(send_live_under)
 
 schedule.every(5).minutes.do(send_value_bet)
 
-
+send_safe_slip()
 while True:
 
     schedule.run_pending()
