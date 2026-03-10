@@ -11,7 +11,6 @@ def select_safe(data):
 
             status = match["fixture"]["status"]["short"]
 
-            # Only upcoming matches
             if status != "NS":
                 continue
 
