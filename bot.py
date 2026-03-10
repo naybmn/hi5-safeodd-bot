@@ -32,3 +32,5 @@ schedule.every(1).hours.do(send_tip)
 while True:
     schedule.run_pending()
     time.sleep(30)
+from api_fetch import get_live_matches
+from predictor import live_alert
