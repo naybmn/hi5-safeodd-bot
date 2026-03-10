@@ -12,7 +12,7 @@ def get_matches():
 
     r = requests.get(url,headers=headers)
 
-    return r.json()"
+    return r.json()
 
 headers = {
     "x-apisports-key": API_KEY
