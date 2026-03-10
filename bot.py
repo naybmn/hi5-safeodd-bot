@@ -1,60 +1,139 @@
 import telebot
-import requests
 
-TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
+from api_fetch import get_upcoming_matches, get_live_matches
+from predictor import build_safe_tips, build_value_tips, build_live_tips
+
+TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 
 bot = telebot.TeleBot(TOKEN)
 
-API_KEY = "309ccb7ddf229c9ca71d2865df1d8e5d"
-
-headers = {
-    "x-apisports-key": API_KEY
-}
-
-def get_matches():
-    url = "https://v3.football.api-sports.io/fixtures?next=20"
-    r = requests.get(url, headers=headers)
-    data = r.json()
-    return data
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, "⚽ Goal Guru AI Bot Activated\n\nCommands:\n/safe\n/value\n/live")
 
-@bot.message_handler(commands=['safe'])
-def safe_tip(message):
+    text = """
+⚽ Goal Guru AI V7
 
-    data = get_matches()
+Commands
 
-    try:
-        match = data["response"][0]
-
-        home = match["teams"]["home"]["name"]
-        away = match["teams"]["away"]["name"]
-
-        text = f"""⚽ SAFE BET
-
-{home} vs {away}
-
-Pick: {home} Win
-Confidence: 72%
+/safe   → Safe bets
+/value  → Value bets
+/live   → Live match tips
+/today  → Today's matches
+/help   → Help
 """
 
-        bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, text)
 
-    except:
-        bot.send_message(message.chat.id, "❌ No safe tips available")
+
+@bot.message_handler(commands=['help'])
+def help_cmd(message):
+
+    text = """
+Goal Guru AI Commands
+
+/safe
+/value
+/live
+/today
+"""
+
+    bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(commands=['today'])
+def today(message):
+
+    matches = get_upcoming_matches()
+
+    if not matches:
+        bot.send_message(message.chat.id,"❌ No matches found")
+        return
+
+    text = "📅 Upcoming Matches\n\n"
+
+    for m in matches[:10]:
+
+        home = m["teams"]["home"]["name"]
+        away = m["teams"]["away"]["name"]
+
+        text += f"{home} vs {away}\n"
+
+    bot.send_message(message.chat.id,text)
+
+
+@bot.message_handler(commands=['safe'])
+def safe(message):
+
+    matches = get_upcoming_matches()
+
+    if not matches:
+        bot.send_message(message.chat.id,"❌ No safe tips available")
+        return
+
+    tips = build_safe_tips(matches)
+
+    text = "⚽ SAFE BETS\n\n"
+
+    for t in tips:
+
+        text += f"""{t['home']} vs {t['away']}
+Pick: {t['pick']}
+Confidence: {t['confidence']}%
+
+"""
+
+    bot.send_message(message.chat.id,text)
+
 
 @bot.message_handler(commands=['value'])
-def value_tip(message):
+def value(message):
 
-    bot.send_message(message.chat.id,"📊 No value bets right now")
+    matches = get_upcoming_matches()
+
+    if not matches:
+        bot.send_message(message.chat.id,"❌ No value bets right now")
+        return
+
+    tips = build_value_tips(matches)
+
+    text = "📊 VALUE BETS\n\n"
+
+    for t in tips:
+
+        text += f"""{t['home']} vs {t['away']}
+Pick: {t['pick']}
+Confidence: {t['confidence']}%
+
+"""
+
+    bot.send_message(message.chat.id,text)
+
 
 @bot.message_handler(commands=['live'])
-def live_tip(message):
+def live(message):
 
-    bot.send_message(message.chat.id,"🔴 No live tips right now")
+    matches = get_live_matches()
 
-print("Goal Guru AI Bot Running...")
+    if not matches:
+        bot.send_message(message.chat.id,"🔴 No live tips right now")
+        return
+
+    tips = build_live_tips(matches)
+
+    text = "🔴 LIVE TIPS\n\n"
+
+    for t in tips:
+
+        text += f"""{t['home']} vs {t['away']}
+Minute: {t['minute']}
+Pick: {t['pick']}
+
+"""
+
+    bot.send_message(message.chat.id,text)
+
+
+print("Goal Guru AI V7 Running...")
 
 bot.infinity_polling()
