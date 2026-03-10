@@ -1,28 +1,48 @@
-def live_tip_model(data):
+from ai_engine import ai_probability,value_check
 
-    tips = []
+def safe_picks(data):
+
+    picks = []
 
     for match in data["response"]:
 
         try:
 
-            minute = match["fixture"]["status"]["elapsed"]
-
             home = match["teams"]["home"]["name"]
             away = match["teams"]["away"]["name"]
 
-            goals_home = match["goals"]["home"]
-            goals_away = match["goals"]["away"]
+            prob = ai_probability()
 
-            total_goals = goals_home + goals_away
+            if prob > 0.70:
 
-            if minute >= 60 and total_goals <= 2:
-
-                tip = "Over 1.5"
-
-                tips.append((home, away, minute, tip))
+                picks.append((home,away,"Home Win",prob))
 
         except:
             continue
 
-    return tips
+    return picks[:3]
+
+
+def value_picks(data):
+
+    picks = []
+
+    for match in data["response"]:
+
+        try:
+
+            home = match["teams"]["home"]["name"]
+            away = match["teams"]["away"]["name"]
+
+            odds = 2.10
+
+            prob = ai_probability()
+
+            if value_check(prob,odds):
+
+                picks.append((home,away,"Over 2.5",prob))
+
+        except:
+            continue
+
+    return picks[:3]
