@@ -34,3 +34,19 @@ while True:
     time.sleep(30)
 from api_fetch import get_live_matches
 from predictor import live_alert
+def send_live_alert():
+
+    matches = get_live_matches()
+
+    alerts = live_alert(matches)
+
+    if len(alerts) == 0:
+        return
+
+    message = "🔥 LIVE UNDER ALERT\n\n"
+
+    for h,a,m in alerts:
+
+        message += f"{h} vs {a}\nMinute: {m}\nTip: Under 2.5\n\n"
+
+    bot.send_message(CHAT_ID, message)
