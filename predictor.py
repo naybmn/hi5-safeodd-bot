@@ -1,48 +1,63 @@
-from ai_engine import ai_probability,value_check
+import random
 
-def safe_picks(data):
+def build_safe_tips(matches):
 
-    picks = []
+    tips = []
 
-    for match in data["response"]:
+    for m in matches[:5]:
 
-        try:
+        home = m["teams"]["home"]["name"]
+        away = m["teams"]["away"]["name"]
 
-            home = match["teams"]["home"]["name"]
-            away = match["teams"]["away"]["name"]
+        confidence = random.randint(72,88)
 
-            prob = ai_probability()
+        tips.append({
+            "home": home,
+            "away": away,
+            "pick": home + " Win",
+            "confidence": confidence
+        })
 
-            if prob > 0.70:
-
-                picks.append((home,away,"Home Win",prob))
-
-        except:
-            continue
-
-    return picks[:3]
+    return tips
 
 
-def value_picks(data):
+def build_value_tips(matches):
 
-    picks = []
+    tips = []
 
-    for match in data["response"]:
+    for m in matches[:4]:
 
-        try:
+        home = m["teams"]["home"]["name"]
+        away = m["teams"]["away"]["name"]
 
-            home = match["teams"]["home"]["name"]
-            away = match["teams"]["away"]["name"]
+        confidence = random.randint(65,80)
 
-            odds = 2.10
+        tips.append({
+            "home": home,
+            "away": away,
+            "pick": "Over 1.5 Goals",
+            "confidence": confidence
+        })
 
-            prob = ai_probability()
+    return tips
 
-            if value_check(prob,odds):
 
-                picks.append((home,away,"Over 2.5",prob))
+def build_live_tips(matches):
 
-        except:
-            continue
+    tips = []
 
-    return picks[:3]
+    for m in matches[:3]:
+
+        home = m["teams"]["home"]["name"]
+        away = m["teams"]["away"]["name"]
+
+        minute = m["fixture"]["status"]["elapsed"]
+
+        tips.append({
+            "home": home,
+            "away": away,
+            "minute": minute,
+            "pick": "Under 3.5 Goals"
+        })
+
+    return tips
