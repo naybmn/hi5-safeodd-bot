@@ -12,3 +12,14 @@ def get_matches():
     response = requests.get(url, headers=headers)
 
     return response.json()
+def get_live_matches():
+
+    url = "https://v3.football.api-sports.io/fixtures?live=all"
+
+    headers = {
+        "x-apisports-key": API_KEY
+    }
+
+    response = requests.get(url, headers=headers)
+
+    return response.json()
