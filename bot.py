@@ -12,59 +12,18 @@ headers = {
 }
 
 
-def get_live_matches():
+def get_matches():
 
-    url = "https://v3.football.api-sports.io/fixtures?live=all"
-
-    r = requests.get(url, headers=headers)
-
-    return r.json()
-
-
-def get_next_matches():
-
-    url = "https://v3.football.api-sports.io/fixtures?next=20"
+    url = "https://v3.football.api-sports.io/fixtures?next=30"
 
     r = requests.get(url, headers=headers)
 
     return r.json()
 
-
-# ---------------- LIVE MODEL ----------------
-
-def live_model(data):
-
-    tips = []
-
-    for match in data["response"]:
-
-        try:
-
-            minute = match["fixture"]["status"]["elapsed"]
-
-            home = match["teams"]["home"]["name"]
-            away = match["teams"]["away"]["name"]
-
-            gh = match["goals"]["home"]
-            ga = match["goals"]["away"]
-
-            total = gh + ga
-
-            if minute >= 60 and total <= 2:
-
-                tips.append((home, away, minute, "Over 1.5"))
-
-        except:
-            continue
-
-    return tips
-
-
-# ---------------- SAFE MODEL ----------------
 
 def safe_model(data):
 
-    tips = []
+    picks = []
 
     for match in data["response"]:
 
@@ -73,19 +32,19 @@ def safe_model(data):
             home = match["teams"]["home"]["name"]
             away = match["teams"]["away"]["name"]
 
-            tips.append((home, away, "Home Win"))
+            league = match["league"]["name"]
+
+            picks.append((home, away, league, "Home Win"))
 
         except:
             continue
 
-    return tips[:5]
+    return picks[:3]
 
-
-# ---------------- VALUE MODEL ----------------
 
 def value_model(data):
 
-    tips = []
+    picks = []
 
     for match in data["response"]:
 
@@ -94,63 +53,41 @@ def value_model(data):
             home = match["teams"]["home"]["name"]
             away = match["teams"]["away"]["name"]
 
-            tips.append((home, away, "Over 2.5"))
+            league = match["league"]["name"]
+
+            picks.append((home, away, league, "Over 2.5"))
 
         except:
             continue
 
-    return tips[:5]
-
-
-# ---------------- COMMANDS ----------------
+    return picks[:3]
 
 
 @bot.message_handler(commands=['start'])
 def start(message):
 
-    bot.reply_to(message,"⚽ Goal Guru Pro Bot Ready\n\nCommands:\n/live\n/safe\n/value")
-
-
-@bot.message_handler(commands=['live'])
-def live(message):
-
-    data = get_live_matches()
-
-    tips = live_model(data)
-
-    if len(tips) == 0:
-
-        bot.reply_to(message,"❌ No live tips right now")
-
-        return
-
-    msg = "🔥 LIVE BETTING TIPS\n\n"
-
-    for h,a,m,t in tips:
-
-        msg += f"{h} vs {a}\nMinute {m}\nTip: {t}\n\n"
-
-    bot.reply_to(message,msg)
+    bot.reply_to(message,
+    "⚽ Goal Guru Pro Bot Ready\n\nCommands:\n/safe\n/value\n/live")
 
 
 @bot.message_handler(commands=['safe'])
 def safe(message):
 
-    data = get_next_matches()
+    data = get_matches()
 
     tips = safe_model(data)
 
     if len(tips) == 0:
 
-        bot.reply_to(message,"❌ No safe tips available")
+        bot.reply_to(message,"❌ No safe tips today")
 
         return
 
-    msg = "✅ SAFE PICKS\n\n"
+    msg = "🔥 SAFE PICKS\n\n"
 
-    for h,a,t in tips:
+    for h,a,l,t in tips:
 
-        msg += f"{h} vs {a}\nTip: {t}\n\n"
+        msg += f"{h} vs {a}\nLeague: {l}\nTip: {t}\n\n"
 
     bot.reply_to(message,msg)
 
@@ -158,23 +95,29 @@ def safe(message):
 @bot.message_handler(commands=['value'])
 def value(message):
 
-    data = get_next_matches()
+    data = get_matches()
 
     tips = value_model(data)
 
     if len(tips) == 0:
 
-        bot.reply_to(message,"❌ No value bets right now")
+        bot.reply_to(message,"❌ No value bets today")
 
         return
 
     msg = "💎 VALUE BETS\n\n"
 
-    for h,a,t in tips:
+    for h,a,l,t in tips:
 
-        msg += f"{h} vs {a}\nTip: {t}\n\n"
+        msg += f"{h} vs {a}\nLeague: {l}\nTip: {t}\n\n"
 
     bot.reply_to(message,msg)
+
+
+@bot.message_handler(commands=['live'])
+def live(message):
+
+    bot.reply_to(message,"Live scan coming soon ⚡")
 
 
 bot.infinity_polling()
