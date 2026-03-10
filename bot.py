@@ -1,123 +1,60 @@
 import telebot
-import requests
+import schedule
+import time
+
+from api_fetch import get_matches
+from predictor import safe_picks,value_picks
 
 TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
 
+CHANNEL = "@gaolguru"
+
 bot = telebot.TeleBot(TOKEN)
 
-API_KEY = "309ccb7ddf229c9ca71d2865df1d8e5d"
 
-headers = {
-    "x-apisports-key": API_KEY
-}
-
-
-def get_matches():
-
-    url = "https://v3.football.api-sports.io/fixtures?next=30"
-
-    r = requests.get(url, headers=headers)
-
-    return r.json()
-
-
-def safe_model(data):
-
-    picks = []
-
-    for match in data["response"]:
-
-        try:
-
-            home = match["teams"]["home"]["name"]
-            away = match["teams"]["away"]["name"]
-
-            league = match["league"]["name"]
-
-            picks.append((home, away, league, "Home Win"))
-
-        except:
-            continue
-
-    return picks[:3]
-
-
-def value_model(data):
-
-    picks = []
-
-    for match in data["response"]:
-
-        try:
-
-            home = match["teams"]["home"]["name"]
-            away = match["teams"]["away"]["name"]
-
-            league = match["league"]["name"]
-
-            picks.append((home, away, league, "Over 2.5"))
-
-        except:
-            continue
-
-    return picks[:3]
-
-
-@bot.message_handler(commands=['start'])
-def start(message):
-
-    bot.reply_to(message,
-    "⚽ Goal Guru Pro Bot Ready\n\nCommands:\n/safe\n/value\n/live")
-
-
-@bot.message_handler(commands=['safe'])
-def safe(message):
+def post_tips():
 
     data = get_matches()
 
-    tips = safe_model(data)
+    safe = safe_picks(data)
 
-    if len(tips) == 0:
+    value = value_picks(data)
 
-        bot.reply_to(message,"❌ No safe tips today")
+    message = "⚽ GOAL GURU AI BETTING BOT\n\n"
 
-        return
+    if len(safe) > 0:
 
-    msg = "🔥 SAFE PICKS\n\n"
+        message += "🔥 SAFE PICKS\n\n"
 
-    for h,a,l,t in tips:
+        for h,a,t,p in safe:
 
-        msg += f"{h} vs {a}\nLeague: {l}\nTip: {t}\n\n"
-
-    bot.reply_to(message,msg)
+            message += f"{h} vs {a}\nTip: {t}\nConfidence: {round(p*100)}%\n\n"
 
 
-@bot.message_handler(commands=['value'])
-def value(message):
+    if len(value) > 0:
 
-    data = get_matches()
+        message += "💎 VALUE BETS\n\n"
 
-    tips = value_model(data)
+        for h,a,t,p in value:
 
-    if len(tips) == 0:
+            message += f"{h} vs {a}\nTip: {t}\nAI Edge: {round(p*100)}%\n\n"
 
-        bot.reply_to(message,"❌ No value bets today")
+
+    if len(safe)==0 and len(value)==0:
 
         return
 
-    msg = "💎 VALUE BETS\n\n"
 
-    for h,a,l,t in tips:
-
-        msg += f"{h} vs {a}\nLeague: {l}\nTip: {t}\n\n"
-
-    bot.reply_to(message,msg)
+    bot.send_message(CHANNEL,message)
 
 
-@bot.message_handler(commands=['live'])
-def live(message):
+schedule.every(30).minutes.do(post_tips)
 
-    bot.reply_to(message,"Live scan coming soon ⚡")
+print("Goal Guru AI Bot Running...")
 
 
-bot.infinity_polling()
+while True:
+
+    schedule.run_pending()
+
+    time.sleep(20)
