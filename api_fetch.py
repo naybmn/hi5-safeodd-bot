@@ -1,24 +1,24 @@
 import requests
 
-API_KEY = "309ccb7ddf229c9ca71d2865df1d8e5d"
+API_KEY = "YOUR_API_KEY"
+
+headers = {
+    "x-apisports-key": API_KEY
+}
+
 
 def get_matches():
-    url = "https://v3.football.api-sports.io/fixtures?next=300"
 
-    headers = {
-        "x-apisports-key": API_KEY
-    }
+    url = "https://v3.football.api-sports.io/fixtures?next=300"
 
     response = requests.get(url, headers=headers)
 
     return response.json()
+
+
 def get_live_matches():
 
     url = "https://v3.football.api-sports.io/fixtures?live=all"
-
-    headers = {
-        "x-apisports-key": API_KEY
-    }
 
     response = requests.get(url, headers=headers)
 
