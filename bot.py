@@ -3,7 +3,7 @@ import telebot
 from api_fetch import get_upcoming_matches, get_live_matches
 from predictor import build_safe_tips, build_value_tips, build_live_tips
 
-TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
+TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
 
 bot = telebot.TeleBot(TOKEN)
 
