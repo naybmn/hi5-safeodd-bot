@@ -50,3 +50,4 @@ def send_live_alert():
         message += f"{h} vs {a}\nMinute: {m}\nTip: Under 2.5\n\n"
 
     bot.send_message(CHAT_ID, message)
+schedule.every(10).minutes.do(send_live_alert)
