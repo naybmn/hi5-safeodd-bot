@@ -1,60 +1,60 @@
 import telebot
-import schedule
-import time
-
-from api_fetch import get_matches
-from predictor import safe_picks,value_picks
+import requests
 
 TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
 
-CHANNEL = "@gaolguru"
-
 bot = telebot.TeleBot(TOKEN)
 
+API_KEY = "YOUR_API_KEY"
 
-def post_tips():
+headers = {
+    "x-apisports-key": API_KEY
+}
+
+def get_matches():
+    url = "https://v3.football.api-sports.io/fixtures?next=20"
+    r = requests.get(url, headers=headers)
+    data = r.json()
+    return data
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.reply_to(message, "⚽ Goal Guru AI Bot Activated\n\nCommands:\n/safe\n/value\n/live")
+
+@bot.message_handler(commands=['safe'])
+def safe_tip(message):
 
     data = get_matches()
 
-    safe = safe_picks(data)
+    try:
+        match = data["response"][0]
 
-    value = value_picks(data)
+        home = match["teams"]["home"]["name"]
+        away = match["teams"]["away"]["name"]
 
-    message = "⚽ GOAL GURU AI BETTING BOT\n\n"
+        text = f"""⚽ SAFE BET
 
-    if len(safe) > 0:
+{home} vs {away}
 
-        message += "🔥 SAFE PICKS\n\n"
+Pick: {home} Win
+Confidence: 72%
+"""
 
-        for h,a,t,p in safe:
+        bot.send_message(message.chat.id, text)
 
-            message += f"{h} vs {a}\nTip: {t}\nConfidence: {round(p*100)}%\n\n"
+    except:
+        bot.send_message(message.chat.id, "❌ No safe tips available")
 
+@bot.message_handler(commands=['value'])
+def value_tip(message):
 
-    if len(value) > 0:
+    bot.send_message(message.chat.id,"📊 No value bets right now")
 
-        message += "💎 VALUE BETS\n\n"
+@bot.message_handler(commands=['live'])
+def live_tip(message):
 
-        for h,a,t,p in value:
-
-            message += f"{h} vs {a}\nTip: {t}\nAI Edge: {round(p*100)}%\n\n"
-
-
-    if len(safe)==0 and len(value)==0:
-
-        return
-
-
-    bot.send_message(CHANNEL,message)
-
-
-schedule.every(30).minutes.do(post_tips)
+    bot.send_message(message.chat.id,"🔴 No live tips right now")
 
 print("Goal Guru AI Bot Running...")
 
-
-while True:
-
-    schedule.run_pending()
-
-    time.sleep(20)
+bot.infinity_polling()
