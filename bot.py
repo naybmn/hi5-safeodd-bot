@@ -5,7 +5,7 @@ import time
 from api_fetch import get_matches
 from predictor import select_safe
 
-TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
+TOKEN = "YOUR_BOT_TOKEN"
 CHAT_ID = "@gaolguru"
 
 bot = telebot.TeleBot(TOKEN)
@@ -19,9 +19,9 @@ def send_tip():
     message = "⚽ SAFE ODD SLIP\n\n"
 
     if len(picks) == 0:
-        message += "No safe matches found now"
+        message += "No safe matches found right now."
     else:
-        for h,a,t in picks:
+        for h, a, t in picks:
             message += f"{h} vs {a}\nTip: {t}\n\n"
 
     bot.send_message(CHAT_ID, message)
@@ -29,10 +29,6 @@ def send_tip():
 
 schedule.every(1).hours.do(send_tip)
 
-
-
 while True:
     schedule.run_pending()
     time.sleep(30)
-
-send_tip()
