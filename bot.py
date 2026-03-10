@@ -5,7 +5,7 @@ TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
 
 bot = telebot.TeleBot(TOKEN)
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "309ccb7ddf229c9ca71d2865df1d8e5d"
 
 headers = {
     "x-apisports-key": API_KEY
