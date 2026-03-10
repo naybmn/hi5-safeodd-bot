@@ -8,7 +8,7 @@ headers = {
 
 def get_matches():
 
-    url = "https://v3.football.api-sports.io/fixtures?next=30"
+    url = "https://v3.football.api-sports.io/fixtures?next=100"
 
     r = requests.get(url,headers=headers)
 
