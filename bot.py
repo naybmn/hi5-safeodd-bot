@@ -7,9 +7,23 @@ from predictor import live_tip_model
 
 
 TOKEN = "8447450102:AAF9znuSEuuJ0Uk-qdZD-QiQ36KUWzSUWxg"
-CHAT_ID = "@gaolguru"
+
+CHANNEL_ID = "@gaolguru"
 
 bot = telebot.TeleBot(TOKEN)
+
+users = []
+
+
+@bot.message_handler(commands=['start'])
+def start(message):
+
+    user_id = message.chat.id
+
+    if user_id not in users:
+        users.append(user_id)
+
+    bot.send_message(user_id,"Goal Guru Bot Activated ⚽")
 
 
 def scan_live_matches():
@@ -27,13 +41,27 @@ def scan_live_matches():
 
         message += f"{h} vs {a}\nMinute: {m}\nTip: {t}\n\n"
 
-    bot.send_message(CHAT_ID, message)
+    # send to channel
+    bot.send_message(CHANNEL_ID,message)
+
+    # send to bot users
+    for user in users:
+        bot.send_message(user,message)
 
 
-# check every 5 minutes
 schedule.every(5).minutes.do(scan_live_matches)
 
+
 scan_live_matches()
+
+
+import threading
+
+def run_bot():
+    bot.infinity_polling()
+
+threading.Thread(target=run_bot).start()
+
 
 while True:
 
